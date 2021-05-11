@@ -8,3 +8,10 @@ countries_aggregate = str_c(
 
 global_aggregate <- fread(global_agg, stringsAsFactors = F, header = T)
 countries_aggregated <- fread(countries_aggregate, stringsAsFactors = F, header = T)
+
+global_aggregate$Date <- as.Date(global_aggregate$Date)
+
+global_aggregate <- global_aggregate %>%
+  rename(Increase_rate = `Increase rate`)
+
+maxdate <- max(global_aggregate$Date)

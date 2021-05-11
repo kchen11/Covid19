@@ -4,6 +4,6 @@ dashboardHeader(
   disable = FALSE,
   .list = NULL,
   leftUi = NULL,
-  controlbarIcon = shiny::icon("gears"),
+  # controlbarIcon = shiny::icon("gears"),
   fixed = FALSE
 )

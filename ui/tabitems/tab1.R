@@ -2,6 +2,13 @@ tabItem(tabName = "tab1",
         h1(""),
         fluidPage(
           fluidRow(
+            column(12,
+                   valueBoxOutput("box1", width = 4),
+                   valueBoxOutput("box2", width = 4),
+                   valueBoxOutput("box3", width = 4)
+                   )
+          ),
+          fluidRow(
             column(9, withSpinner(plotlyOutput("Glo_Covid")), type = 3),
             column(3, box(title = 'Input Options',
                           width = 12, 
@@ -9,25 +16,11 @@ tabItem(tabName = "tab1",
                           # control the date
                           dateRangeInput(inputId = 'dateRange1',
                                          label = "Date Range Input",
-                                         start = min(global_aggregate$Date), end = max(global_aggregate$Date),
-                                         min = min(global_aggregate$Date), max(global_aggregate$Date),
+                                         start = min(global_aggregate$Date), end = maxdate,
+                                         min = min(global_aggregate$Date), max = maxdate,
                                          separator = " / ", format = "mm/dd/yy",
                                          startview = 'year', language = 'en', weekstart = 1
                           ),
-                          # control the parameter (deaths, recovered, confirmed)
-                          checkboxGroupButtons(
-                            inputId = "checkbox1",
-                            label = "Case Type Picker",
-                            choices = c("Confirmed", "Recovered", "Deaths"),
-                            selected = c("Confirmed", "Recovered", "Deaths"),
-                            justified = T, 
-                            checkIcon = list(
-                              yes = tags$i(class = "fa fa-check-square", 
-                                           style = "color: steelblue"),
-                              no = tags$i(class = "fa fa-square-o", 
-                                          style = "color: steelblue"))
-                          ),
-                          actionLink("selectall","Select/Deselect All") ,
                           align = 'center',
                           collapsible = T, 
                           collapsed = F, 
