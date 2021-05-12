@@ -127,3 +127,11 @@ hc_theme_sparkline_vb <- function(...) {
   
   theme
 }
+
+
+time_convert <- function(hour, min, sec){
+  milli = (hour * 3600000) + (min * 60000) + (sec * 1000)
+  return(milli)
+}
+
+time_convert(1, 1, 1)

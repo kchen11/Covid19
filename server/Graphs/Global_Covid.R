@@ -36,7 +36,7 @@ output$Glo_Covid <- renderPlotly({
     add_trace(y = global_aggregate$Deaths, 
               type = 'scatter', 
               mode = 'lines',
-              name = 'Deaths')
+              name = 'Deaths') 
   
   
   fig <- fig %>%
@@ -61,9 +61,14 @@ output$Glo_Covid <- renderPlotly({
         ticks = "outside"
       ),
       autosize = T,
-      hovermode = "closest"
+      hovermode = "x unified",
+      colorway = c('#0073b7', '#00a65a', '#dd4b39'),
+      legend = list(orientation = 'h', 
+                    traceorder = 'normal',
+                    xanchor = "left",
+                    y = -.25,
+                    x = 0)
     )
-  
   
   
   fig
@@ -74,22 +79,22 @@ output$box1 <- renderValueBox({
     filter(Date == max(Date))
   
   global_aggregate_hc <- global_aggregate %>%
-    filter(Date >= max(Date) - days(21))
+    filter(Date >= max(Date) - days(13))
   
   vb <- valueBoxSpark(
     value = paste(round(global_aggregate_box$Confirmed/1000000, digits = 2), 'M'),
     title = toupper("Confirmed Cases to Date"),
     sparkobj = 
       hchart(global_aggregate_hc, "spline", hcaes(Date, Confirmed), name = "Confirmed", marker = F)  %>% 
-      hc_size(height = 60) %>% 
+      hc_size(height = 50) %>% 
       hc_credits(enabled = FALSE) %>%
       hc_add_theme(hc_theme_sparkline_vb()),
     subtitle = tagList(HTML("&uarr;"), 
                        paste(percent(global_aggregate_box$Increase_rate, accuracy = 1), "from the previous day")),
-    info = "This refers to the global confirmed cases",
+    info = NULL,
     icon = icon("lungs-virus"), 
     width = 3,
-    color = "green", 
+    color = "blue", 
     href = NULL
   )
   
@@ -101,27 +106,23 @@ output$box2 <- renderValueBox({
     filter(Date == max(Date))
   
   global_aggregate_hc <- global_aggregate %>%
-    filter(Date >= max(Date) - days(21))
-  
-  hc1 <- hchart(global_aggregate_hc, "area", hcaes(Date, Deaths), name = "Deaths", marker = F)  %>%
-    hc_size(height = 60) %>%
-    hc_credits(enabled = FALSE) %>%
-    hc_add_theme(hc_theme_sparkline_vb())
+    filter(Date >= max(Date) - days(13)) %>%
+    mutate(recovered_rate = (Recovered - lag(Recovered))/lag(Recovered) * 100)
   
   vb <- valueBoxSpark(
-    value = paste(round(global_aggregate_box$Deaths/1000000, digits = 2), 'M'),
-    title = toupper("Deaths to Date"),
+    value = paste(round(global_aggregate_box$Recovered/1000000, digits = 2), 'M'),
+    title = toupper("Recovered Cases to Date"),
     sparkobj = 
-      hchart(global_aggregate_hc, "area", hcaes(Date, Deaths), name = "Deaths", marker = F)  %>%
-      hc_size(height = 60) %>%
+      hc2 <- hchart(global_aggregate_hc, "spline", hcaes(Date, Recovered), name = "Recovered", marker = F)  %>%
+      hc_size(height = 50) %>%
       hc_credits(enabled = FALSE) %>%
       hc_add_theme(hc_theme_sparkline_vb()),
     subtitle = tagList(HTML("&uarr;"), 
-                       paste(percent(global_aggregate_box$Increase_rate, accuracy = 1), "from the previous day")),
-    info = "This refers to the global red cases",
-    icon = icon("lungs-virus"), 
+                       paste(percent(tail(global_aggregate_hc$recovered_rate, 1), accuracy = 1), "from the previous day")),
+    info = NULL,
+    icon = icon("medkit"), 
     width = 3,
-    color = "red", 
+    color = "green", 
     href = NULL
   )
   
@@ -132,26 +133,29 @@ output$box3 <- renderValueBox({
   global_aggregate_box <- global_aggregate %>%
     filter(Date == max(Date))
   
+  # org_value - new value / org
   global_aggregate_hc <- global_aggregate %>%
-    filter(Date >= max(Date) - days(21))
+    filter(Date >= max(Date) - days(13)) %>% 
+    mutate(death_rate = (Deaths - lag(Deaths))/lag(Deaths) * 100)
   
   vb <- valueBoxSpark(
-    value = paste(round(global_aggregate_box$Recovered/1000000, digits = 2), 'M'),
-    title = toupper("Recovered Cases to Date"),
+    value = paste(round(global_aggregate_box$Deaths/1000000, digits = 2), 'M'),
+    title = toupper("Deaths to Date"),
     sparkobj = 
-      hc2 <- hchart(global_aggregate_hc, "areaspline", hcaes(Date, Recovered), name = "Recovered", marker = F)  %>%
-      hc_size(height = 60) %>%
+      hchart(global_aggregate_hc, "area", hcaes(Date, Deaths), name = "Deaths", marker = F)  %>%
+      hc_size(height = 50) %>%
       hc_credits(enabled = FALSE) %>%
       hc_add_theme(hc_theme_sparkline_vb()),
     subtitle = tagList(HTML("&uarr;"), 
-                       paste(percent(global_aggregate_box$Increase_rate, accuracy = 1), "from the previous day")),
-    info = "This refers to the global recovered cases",
-    icon = icon("lungs-virus"), 
+                       paste(percent(tail(global_aggregate_hc$death_rate, 1), accuracy = 1), "from the previous day")),
+    info = NULL,
+    icon = icon("procedures"), 
     width = 3,
-    color = "green", 
+    color = "red", 
     href = NULL
   )
   
   vb
   
 })
+

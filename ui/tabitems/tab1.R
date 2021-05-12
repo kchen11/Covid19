@@ -1,12 +1,13 @@
 tabItem(tabName = "tab1",
-        h1(""),
+        h1("Global Coronavirus Statistics", align = 'center'),
+        h3("as of", max(global_aggregate$Date), align = 'center'),
         fluidPage(
           fluidRow(
             column(12,
                    valueBoxOutput("box1", width = 4),
                    valueBoxOutput("box2", width = 4),
                    valueBoxOutput("box3", width = 4)
-                   )
+            )
           ),
           fluidRow(
             column(9, withSpinner(plotlyOutput("Glo_Covid")), type = 3),
